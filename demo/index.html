@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Dynamic Select Demo</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="demo.css" />
+<script src="jquery-1.7.2.min.js"></script>
+<script src="../jquery.dynamic-select.js"></script>
+<script src="demo.js"></script>
+</head>
+<body>
+
+<h1>Dynamic Select Demo</h1>
+
+<div>
+    <h2>Normal</h2>
+    <p>Click the button to populate the select. This example is "unfiltered" and sends an array of objects with <code>value</code> and <code>label</code> properties.</p>
+    <label>Unfiltered</label>
+    <button id="populate">Populate</button>
+    <select id="dynamic">
+        <option>Click button to Load</option>
+    </select>
+    
+    <pre>
+// An array of objects in the standar format.
+[        	
+	{ label: "Homer", value: "1" },
+	{ label: "Marge", value: "2" },
+	{ label: "Bart", value: "3" },
+	{ label: "Lisa", value: "4" },
+	{ label: "Maggie", value: "5" },
+	{ label: "An optgroup", value: [
+		{ label: "Lenny", value: "6" },
+		{ label: "Karl", value: "7" }
+	]}
+]
+    </pre>
+    
+</div>
+
+<div>
+    <h2>Filtered</h2>
+    <p>The DynamicSelect for this example is created with a <code>filter</code> function. The filter expects an object which it converts to an array of objects <code>value</code> and <code>label</code> properties.</p>
+    <label>Filtered</label>
+    <button id="populate-filter">Populate</button>
+    <select id="dynamic-filter">
+        <option>Click button to Load</option>
+    </select>
+    
+<pre>
+// The object starts off like this...
+{
+   fry: "Philip J. Fry",
+   leela: "Turanga Leela",
+   // ...
+}
+
+// ...and the filter function turns it into this...
+[
+    {
+        value: "fry",
+        label: "Philip J. Fry"
+    },
+    {
+        value: "leela",
+        label: "Turanga Leela",
+    },
+    // ...
+]
+</pre>  
+    	   
+</div>
+
+</body>
+</html>
