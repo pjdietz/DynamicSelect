@@ -2,186 +2,151 @@
  * Dynamic Select
  * Populate and repopulate a select on the fly.
  *
- * Copyright (c) 2009 PJ Dietz
- * Version: 1.00
+ * Copyright (c) 2012 PJ Dietz
+ * Version: 1.1.0
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
  *
  * http://pjdietz.com/jquery-plugins/dynamic-select/
  */
- 
+
 /*global jQuery */
 
 (function ($) {
 
+    "use strict";
+
     var DynamicSelect;
-    
+
     DynamicSelect = function (element, options) {
-        
-        // Store a reference to the DOM element.  
-        this.domSelect = element;
-        
-        // Store a reference to this instance in the DOM element's data
-        this.domSelect.data('dynamicSelect', this);
-        
-        // Merge the options
-        if (typeof options === "object" && 
-                typeof options.filter === "function") {
-            
-            this.filter = options.filter;
-        }
 
-    };
-    
+        // Merge the options.
+        this.options = $.extend({}, $.fn.dynamicSelect.defaults, options);
+
+        // Store a reference to the element.
+        this.element = $(element);
+
+    }; // DynamicSelect
+
     DynamicSelect.prototype = {
-        
-        // Given an object, return an object to use as key-value pairs for use
-        // as the value and labels of the options.
-        // 
-        // The default is to pass the options through as is, but this can 
-        // be altered by passing a new filter in through the options when
-        // setting up the instance or by calling setFilter.
-        //
-        filter: function (options) {
-            return options;    
-        },
-                
-        // Change the value and fire the change event
-        set: function (value) {
-            this.domSelect.val(value);
-            this.domSelect.change();    
-        },
-        
-        // Attach a new filter function
-        setFilter: function (func) {
-            this.filter = func;    
-        },
-        
-        // Update the select with the passed options. The instance's filter
-        // function will be called on the passed options.  
-        update: function (opts) {
-            
-            var 
-                /* Data elements */
-                opt,
-                subopt,
-                
-                /* DOM elements */
-                option,
-                optgroup,
-                
-                /* Loop counters */
-                i, u, j, v;
-                
-            
-            
-            // Clear out the old items.        
-            this.domSelect.empty();    
-            
-            // Filter the options
-            opts = this.filter(opts);
-            
-            for (i = 0, u = opts.length; i < u; i += 1) {
-                opt = opts[i];
 
-                // Add a new option                
-                if (!$.isArray(opt.value)) {
+        update: function (options) {
 
-                    option = $("<option></option")
-                        .attr("value", opt.value)
-                        .text(opt.label);
-                
-                    this.domSelect.append(option);
+            var option, subObtion, optionElem, optgroupElem, i, u, j, v;
 
-                }
-                
-                // Add an optgroup
-                else {
+            // Clear out the old items.
+            this.element.empty();
 
-                    optgroup = $('<optgroup></optgroup>')
-                        .attr('label', opt.label);
-                        
-                    for (j = 0, v = opt.value.length; j < v; j += 1) {
+            // Filter the options.
+            options = this.options.filter(options);
 
-                        subopt = opt.value[j];
-                      
-                        optgroup.append(
-                            $('<option></option>')
-                                .attr('value', subopt.value)
-                                .text(subopt.label)
-                        );
-                    }              
-    
-                    this.domSelect.append(optgroup);
+            for (i = 0, u = options.length; i < u; i += 1) {
 
-                }
-                
-            }
-            
-            this.domSelect.change();
-            
-        }
-        
-        
-    };
-    
-    
-    
+                // Reference the current option.
+                option = options[i];
+
+                if (!$.isArray(option.value)) {
+
+                    // The value is not an array. Add an option.
+                    optionElem = $("<option></option")
+                        .attr("value", option.value)
+                        .text(option.label);
+
+                    // Append the option to the select.
+                    this.element.append(optionElem);
+
+                } else {
+
+                    // The value is an array. Add an optgroup.
+                    optgroupElem = $('<optgroup></optgroup>')
+                        .attr('label', option.label);
+
+                    // Add the sub-options to the optgroup.
+                    for (j = 0, v = option.value.length; j < v; j += 1) {
+
+                        // Reference the current sub-option.
+                        subObtion = option.value[j];
+
+                        // Make an option element.
+                        optionElem = $("<option></option")
+                            .attr("value", subObtion.value)
+                            .text(subObtion.label);
+
+                        // Append the option to the optgroup.
+                        optgroupElem.append(optionElem);
+
+                    }
+
+                    // Append the optgroup to the select.
+                    this.element.append(optgroupElem);
+
+                } // if
+
+            } // for
+
+        } // update()
+
+    }; // DynamicSelect.prototype
 
     // -------------------------------------------------------------------------
-    // Extend jQuery 
+    // Extend jQuery
 
-    if (typeof $.fn.dynamicSelect === "undefined") {
-     
-        $.fn.extend({  
-            
-            dynamicSelect: function () {
-                
-                var method, options;
-                
-                if (typeof arguments[0] !== "string") {
-                    method = "create";
-                    options = arguments[0];
+    if (typeof $.fn.freeow === "undefined") {
+
+        $.fn.extend({
+
+            dynamicSelect: function (method, options) {
+
+                // If only one parameter was passed, assume the caller means
+                // to use the contructor with options.
+                if (typeof options === "undefined") {
+                    options = method;
                 }
-                else {
-                    method = arguments[0];
-                    options = arguments[1];
-                
-                }
-                
-                                
+
                 return this.each(function () {
-                                           
+
                     var ds;
-                
-                    ds = $(this).data("dynamicSelect");
-                    
-                    // No DynamicSelect setup yet. Let's create one!
+
+                    // Try to read the TabSet from the element.
+                    ds = $(this).data("DynamicSelect");
+
+                    // If no DynamicSelect exists, create one with the options.
                     if (typeof ds === "undefined") {
                         ds = new DynamicSelect($(this), options);
+                        $(this).data("DynamicSelect", ds);
                     }
 
                     switch (method) {
+
                     case "set":
                         ds.set(options);
                         break;
-                    
+
                     case "setFilter":
                         ds.setFilter(options);
                         break;
-                            
+
                     case "update":
                         ds.update(options);
                         break;
-                    }
 
-                });
+                    } // switch
 
-                 
+                }); // this.each()
+
+            } // dynamicSelect()
+
+        }); // $.fn.extend()
+
+        // Configuration Defaults.
+        $.fn.dynamicSelect.defaults = {
+
+            filter: function (options) {
+                return options;
             }
-           
-        });    
-        
-    }      
+
+        }; // $.fn.dynamicSelect.defaults
+
+    } // if undefined
 
 }(jQuery));
