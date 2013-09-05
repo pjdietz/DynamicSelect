@@ -2,8 +2,8 @@
  * Dynamic Select
  * Populate and repopulate a select on the fly.
  *
- * Copyright (c) 2012 PJ Dietz
- * Version: 1.1.0
+ * Copyright (c) 2013 PJ Dietz
+ * Version: 1.1.1
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
  *
@@ -48,7 +48,7 @@
                 if (!$.isArray(option.value)) {
 
                     // The value is not an array. Add an option.
-                    optionElem = $("<option></option")
+                    optionElem = $("<option></option>")
                         .attr("value", option.value)
                         .text(option.label);
 
@@ -68,7 +68,7 @@
                         subObtion = option.value[j];
 
                         // Make an option element.
-                        optionElem = $("<option></option")
+                        optionElem = $("<option></option>")
                             .attr("value", subObtion.value)
                             .text(subObtion.label);
 
